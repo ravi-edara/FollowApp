@@ -3,3 +3,6 @@
 ################################################################################
 
 /.vs
+/server/ShopifyCart.API/obj
+/server/ShopifyCart.API/bin/Debug/net8.0
+/server/ShopifyCart.API/.vs/ShopifyCart.API
