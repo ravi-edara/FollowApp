@@ -1,0 +1,120 @@
+{
+  "configVersion": 1,
+  "timestamp": 1741484218492,
+  "appData": {
+    "version": "1.0.0",
+    "changelog": "Initial version"
+  },
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/index.html",
+        "/main.c042cb5e5b06e10d.js",
+        "/manifest.webmanifest",
+        "/polyfills.381d5f0ad983218c.js",
+        "/runtime.d52bd31c80b210d0.js",
+        "/styles.598ecd17cb51702b.css"
+      ],
+      "patterns": [
+        "https:\\/\\/fonts\\.googleapis\\.com\\/.*",
+        "https:\\/\\/fonts\\.gstatic\\.com\\/.*"
+      ]
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "shopify-api",
+      "patterns": [
+        "\\/api\\/products\\/.*",
+        "\\/api\\/cart\\/.*",
+        "\\/api\\/checkout\\/.*"
+      ],
+      "strategy": "freshness",
+      "maxSize": 100,
+      "maxAge": 10800000,
+      "timeoutMs": 10000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    },
+    {
+      "name": "static-api",
+      "patterns": [
+        "\\/api\\/settings\\/.*",
+        "\\/api\\/categories\\/.*"
+      ],
+      "strategy": "performance",
+      "maxSize": 100,
+      "maxAge": 86400000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/index.html": "72492aa1c0d8b0a6b2f3a2517c3e94743f24ca60",
+    "/main.c042cb5e5b06e10d.js": "ffa00093db218cc198ca0edcfe29e815b490ce47",
+    "/manifest.webmanifest": "74bdd9f4c443de48725d97ea844cca6c24c518d5",
+    "/polyfills.381d5f0ad983218c.js": "6e36b78ed1802df7f4e31c876dba749dc7b1dcc1",
+    "/runtime.d52bd31c80b210d0.js": "03cd2d68a4871f7c2b82dd413f4552f140be3629",
+    "/styles.598ecd17cb51702b.css": "a08aae206917ea9053e5d38c2b84892b4b9fcc01"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[!][^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[!][^/]*\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?\\.[^/]*\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/api\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}

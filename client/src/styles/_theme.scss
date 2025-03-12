@@ -1,0 +1,87 @@
+@use '@angular/material' as mat;
+@use 'sass:map';
+
+// Define the palettes
+$light-primary: mat.define-palette(mat.$blue-palette);
+$light-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$light-warn: mat.define-palette(mat.$red-palette);
+
+$dark-primary: mat.define-palette(mat.$blue-grey-palette);
+$dark-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+$dark-warn: mat.define-palette(mat.$deep-orange-palette);
+
+$blue-primary: mat.define-palette(mat.$indigo-palette);
+$blue-accent: mat.define-palette(mat.$light-blue-palette, A200, A100, A400);
+$blue-warn: mat.define-palette(mat.$pink-palette);
+
+$green-primary: mat.define-palette(mat.$green-palette);
+$green-accent: mat.define-palette(mat.$lime-palette, A200, A100, A400);
+$green-warn: mat.define-palette(mat.$deep-orange-palette);
+
+// Create the theme objects
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: $light-primary,
+    accent: $light-accent,
+    warn: $light-warn
+  ),
+  typography: null,
+  density: 0
+));
+
+$dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $dark-primary,
+    accent: $dark-accent,
+    warn: $dark-warn
+  ),
+  typography: null,
+  density: 0
+));
+
+$blue-theme: mat.define-light-theme((
+  color: (
+    primary: $blue-primary,
+    accent: $blue-accent,
+    warn: $blue-warn
+  ),
+  typography: null,
+  density: 0
+));
+
+$green-theme: mat.define-light-theme((
+  color: (
+    primary: $green-primary,
+    accent: $green-accent,
+    warn: $green-warn
+  ),
+  typography: null,
+  density: 0
+));
+
+// Theme mixins
+@mixin apply-theme($theme) {
+  @include mat.all-component-colors($theme);
+  
+  $color-config: mat.get-color-config($theme);
+  $primary-palette: map.get($color-config, 'primary');
+  $accent-palette: map.get($color-config, 'accent');
+  $warn-palette: map.get($color-config, 'warn');
+  $is-dark: map.get($color-config, 'is-dark');
+
+  // Custom CSS variables
+  :root {
+    --primary-color: #{mat.get-color-from-palette($primary-palette, 500)};
+    --primary-lighter: #{mat.get-color-from-palette($primary-palette, 100)};
+    --primary-darker: #{mat.get-color-from-palette($primary-palette, 700)};
+    --accent-color: #{mat.get-color-from-palette($accent-palette, A200)};
+    --warn-color: #{mat.get-color-from-palette($warn-palette, 500)};
+    --text-color: #{if($is-dark, #ffffff, rgba(0, 0, 0, 0.87))};
+    --text-color-light: #{if($is-dark, rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0.6))};
+    --background-color: #{if($is-dark, #303030, #fafafa)};
+    --surface-color: #{if($is-dark, #424242, #ffffff)};
+    --border-color: #{if($is-dark, rgba(255, 255, 255, 0.12), rgba(0, 0, 0, 0.12))};
+    --shadow-color: #{if($is-dark, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.1))};
+    --hover-color: #{if($is-dark, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.04))};
+  }
+} 
