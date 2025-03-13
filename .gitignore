@@ -7,3 +7,7 @@
 /server/ShopifyCart.API/bin/Debug/net8.0
 /server/ShopifyCart.API/.vs/ShopifyCart.API
 /server/ShopifyCart.API/.vs/ProjectEvaluation
+/client/node_modules
+/client/dist/client
+/client/.angular/cache/16.2.16
+/client/.vscode
