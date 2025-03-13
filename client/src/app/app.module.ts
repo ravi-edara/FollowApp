@@ -15,6 +15,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 
 // Components
 import { AppComponent } from './app.component';
@@ -58,7 +61,10 @@ import { AppRoutingModule } from './app-routing.module';
     MatSnackBarModule,
     MatInputModule,
     MatToolbarModule,
-    MatMenuModule
+    MatMenuModule,
+    MatDividerModule,
+    MatSidenavModule,
+    MatListModule
   ],
   providers: [ShopifyService, CartService],
   bootstrap: [AppComponent]

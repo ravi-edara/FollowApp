@@ -55,7 +55,6 @@
               "optimization": false,
               "vendorChunk": true,
               "extractLicenses": false,
-              "inspect": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",

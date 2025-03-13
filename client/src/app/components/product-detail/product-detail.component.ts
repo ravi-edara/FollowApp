@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShopifyService } from '../../services/shopify.service';
 import { CartService } from '../../services/cart.service';
-import { ShopifyProduct } from '../../models/shopify-product.interface';
+import { ShopifyProduct, ShopifyProductVariant } from '../../models/shopify-product.interface';
 
 @Component({
   selector: 'app-product-detail',
@@ -11,15 +11,15 @@ import { ShopifyProduct } from '../../models/shopify-product.interface';
     <div class="product-detail" *ngIf="product">
       <div class="product-images">
         <div class="main-image">
-          <img [src]="selectedImage?.src || product.images[0]?.src" [alt]="product.title">
+          <img [src]="getImageSrc()" [alt]="getProductTitle()">
         </div>
-        <div class="thumbnail-list">
+        <div class="thumbnail-list" *ngIf="product.images && product.images.length > 0">
           <div 
             *ngFor="let image of product.images" 
             class="thumbnail"
             [class.selected]="selectedImage?.id === image.id"
             (click)="selectImage(image)">
-            <img [src]="image.src" [alt]="product.title">
+            <img [src]="image.src" [alt]="getProductTitle()">
           </div>
         </div>
       </div>
@@ -29,15 +29,15 @@ import { ShopifyProduct } from '../../models/shopify-product.interface';
         <p class="vendor">{{ product.vendor }}</p>
         
         <div class="price-section">
-          <p class="price">{{ product.variants[0]?.price | currency }}</p>
-          <p class="compare-price" *ngIf="product.variants[0]?.compare_at_price">
-            {{ product.variants[0]?.compare_at_price | currency }}
+          <p class="price">{{ getDefaultVariant()?.price || '0.00' | currency }}</p>
+          <p class="compare-price" *ngIf="getDefaultVariant()?.compare_at_price">
+            {{ getDefaultVariant()?.compare_at_price | currency }}
           </p>
         </div>
 
         <div class="inventory-section">
-          <p class="inventory" [class.low]="product.variants[0]?.inventory_quantity < 10">
-            {{ product.variants[0]?.inventory_quantity }} in stock
+          <p class="inventory" [class.low]="(getDefaultVariant()?.inventory_quantity || 0) < 10">
+            {{ getDefaultVariant()?.inventory_quantity || 0 }} in stock
           </p>
         </div>
 
@@ -46,7 +46,7 @@ import { ShopifyProduct } from '../../models/shopify-product.interface';
           <div [innerHTML]="product.description"></div>
         </div>
 
-        <div class="variants" *ngIf="product.variants.length > 1">
+        <div class="variants">
           <h2>Options</h2>
           <div class="variant-options">
             <div *ngFor="let option of product.options" class="option-group">
@@ -66,7 +66,7 @@ import { ShopifyProduct } from '../../models/shopify-product.interface';
           <button 
             mat-raised-button 
             color="primary" 
-            [disabled]="!selectedVariant?.inventory_quantity"
+            [disabled]="!(selectedVariant?.inventory_quantity || getDefaultVariant()?.inventory_quantity)"
             (click)="addToCart()">
             Add to Cart
           </button>
@@ -272,7 +272,7 @@ export class ProductDetailComponent implements OnInit {
       .subscribe({
         next: (product) => {
           this.product = product;
-          this.selectedImage = product.images[0];
+          this.selectedImage = product.images && product.images.length > 0 ? product.images[0] : null;
           this.initializeOptions();
           this.loading = false;
         },
@@ -295,24 +295,56 @@ export class ProductDetailComponent implements OnInit {
     this.selectedImage = image;
   }
 
-  get selectedVariant(): any {
+  getProduct(): string {
+    return this.product?.title || 'Product';
+  }
+
+  get selectedVariant(): ShopifyProductVariant | null {
     if (!this.product) return null;
 
     return this.product.variants.find(variant => {
-      return this.product?.options.every(option => {
+      return this.product!.options.every(option => {
         const optionValue = this.selectedOptions[option.name];
-        return variant[`option${option.position}`] === optionValue;
+        switch (option.position) {
+          case 1: return variant.option1 === optionValue;
+          case 2: return variant.option2 === optionValue;
+          case 3: return variant.option3 === optionValue;
+          default: return false;
+        }
       });
-    });
+    }) || null;
+  }
+
+  getDefaultVariant(): ShopifyProductVariant | null {
+    if (!this.product || !this.product.variants.length) return null;
+
+    // If no options are selected, return the first variant
+    if (Object.keys(this.selectedOptions).length === 0) {
+      return this.product.variants[0];
+    }
+
+    // Otherwise, find the variant that matches the selected options
+    return this.product.variants.find(variant => {
+      return this.product!.options.every(option => {
+        const optionValue = this.selectedOptions[option.name];
+        switch (option.position) {
+          case 1: return variant.option1 === optionValue;
+          case 2: return variant.option2 === optionValue;
+          case 3: return variant.option3 === optionValue;
+          default: return false;
+        }
+      });
+    }) || this.product.variants[0];
   }
 
   addToCart(): void {
-    if (!this.product || !this.selectedVariant) {
+    const variant = this.getDefaultVariant();
+    if (!this.product || !variant) {
       return;
     }
 
     try {
-      this.cartService.addItem(this.product, this.selectedVariant.id);
+      this.cartService.addItem(this.product, variant.id);
       this.snackBar.open('Added to cart', 'Close', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -325,5 +357,19 @@ export class ProductDetailComponent implements OnInit {
         verticalPosition: 'top'
       });
     }
+  }
+
+  getImageSrc(): string {
+    if (this.selectedImage?.src) {
+      return this.selectedImage.src;
+    }
+    if (this.product?.images && this.product.images.length > 0 && this.product.images[0]?.src) {
+      return this.product.images[0].src;
+    }
+    return ''; // fallback to empty string if no image is available
+  }
+
+  getProductTitle(): string {
+    return this.product?.title || 'Product';
   }
 } 

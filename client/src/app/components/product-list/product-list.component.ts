@@ -17,18 +17,21 @@ import { ShopifyProduct } from '../../models/shopify-product.interface';
       <div *ngIf="error" class="error-container">
         <mat-icon color="warn">error_outline</mat-icon>
         <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="loadProducts()">
+          Try Again
+        </button>
       </div>
 
       <!-- Products Grid -->
       <div *ngIf="!loading && !error" class="products-grid">
         <mat-card *ngFor="let product of products" class="product-card">
-          <img mat-card-image [src]="product.images[0]?.src" [alt]="product.title">
+          <img mat-card-image [src]="product.images[0]?.src || 'assets/placeholder.jpg'" [alt]="product.title">
           <mat-card-content>
             <h2>{{ product.title }}</h2>
             <p class="vendor">{{ product.vendor }}</p>
-            <p class="price">{{ product.variants[0]?.price | currency }}</p>
-            <p class="inventory" [class.low]="product.variants[0]?.inventory_quantity < 10">
-              {{ product.variants[0]?.inventory_quantity }} in stock
+            <p class="price">{{ (product.variants[0]?.price || '0.00') | currency }}</p>
+            <p class="inventory" [class.low]="(product.variants[0]?.inventory_quantity || 0) < 10">
+              {{ product.variants[0]?.inventory_quantity || 0 }} in stock
             </p>
           </mat-card-content>
           <mat-card-actions>
@@ -40,11 +43,18 @@ import { ShopifyProduct } from '../../models/shopify-product.interface';
       </div>
 
       <!-- Pagination -->
-      <div *ngIf="!loading && !error && pageInfo" class="pagination">
-        <button mat-button [disabled]="!pageInfo.hasPreviousPage" (click)="loadPreviousPage()">
+      <div *ngIf="!loading && !error && products.length > 0" class="pagination">
+        <button 
+          mat-button 
+          [disabled]="currentPage === 1"
+          (click)="loadPreviousPage()">
           Previous
         </button>
-        <button mat-button [disabled]="!pageInfo.hasNextPage" (click)="loadNextPage()">
+        <span>Page {{ currentPage }}</span>
+        <button 
+          mat-button 
+          [disabled]="!pageInfo?.hasNextPage"
+          (click)="loadNextPage()">
           Next
         </button>
       </div>
@@ -154,7 +164,7 @@ export class ProductListComponent implements OnInit {
   error: string | null = null;
   pageInfo: any = null;
   currentPage = 1;
-  itemsPerPage = 12;
+  itemsPerPage = 250;
 
   constructor(
     private shopifyService: ShopifyService,

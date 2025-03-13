@@ -8,7 +8,7 @@ import { ShopifyProduct, ShopifyProductsResponse } from '../models/shopify-produ
   providedIn: 'root'
 })
 export class ShopifyService {
-  private readonly apiUrl = environment.shopify.apiUrl;
+  private readonly apiUrl = environment.apiUrl;
   private readonly accessToken = environment.shopify.accessToken;
 
   constructor(private http: HttpClient) {}
@@ -19,29 +19,65 @@ export class ShopifyService {
     });
   }
 
-  getProducts(limit: number = 12): Observable<ShopifyProductsResponse> {
+  private mapProduct(product: any): ShopifyProduct {
+    return {
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      vendor: product.vendor,
+      product_type: product.product_type,
+      created_at: product.created_at,
+      handle: product.handle,
+      updated_at: product.updated_at,
+      published_at: product.published_at,
+      template_suffix: product.template_suffix,
+      status: product.status,
+      published_scope: product.published_scope,
+      tags: product.tags,
+      variants: product.variants,
+      images: product.images,
+      options: product.options
+    };
+  }
+
+  getProducts(limit: number = 250): Observable<ShopifyProductsResponse> {
     const params = new HttpParams()
       .set('limit', limit.toString());
 
-    return this.http.get<{ products: ShopifyProduct[] }>(
-      `${this.apiUrl}/products.json`,
-      { headers: this.headers, params }
+    return this.http.get(
+      `${this.apiUrl}/products`,
+      {
+        headers: this.headers,
+        params,
+        responseType: 'text'
+      }
     ).pipe(
-      map(response => ({
-        products: response.products,
-        pageInfo: {
-          hasNextPage: response.products.length === limit
-        }
-      }))
+      map(response => {
+        const parsed = JSON.parse(response);
+        const products = (parsed || []).map((product: any) => this.mapProduct(product));
+        return {
+          products,
+          pageInfo: {
+            hasNextPage: products.length === limit,
+            hasPreviousPage: false
+          }
+        };
+      })
     );
   }
 
   getProduct(id: string): Observable<ShopifyProduct> {
-    return this.http.get<{ product: ShopifyProduct }>(
+    return this.http.get(
       `${this.apiUrl}/products/${id}.json`,
-      { headers: this.headers }
+      {
+        headers: this.headers,
+        responseType: 'text'
+      }
     ).pipe(
-      map(response => response.product)
+      map(response => {
+        const parsed = JSON.parse(response);
+        return this.mapProduct(parsed.product);
+      })
     );
   }
 
@@ -49,16 +85,24 @@ export class ShopifyService {
     const params = new HttpParams()
       .set('query', query);
 
-    return this.http.get<{ products: ShopifyProduct[] }>(
+    return this.http.get(
       `${this.apiUrl}/products/search.json`,
-      { headers: this.headers, params }
+      {
+        headers: this.headers,
+        params,
+        responseType: 'text'
+      }
     ).pipe(
-      map(response => ({
-        products: response.products,
-        pageInfo: {
-          hasNextPage: false
-        }
-      }))
+      map(response => {
+        const parsed = JSON.parse(response);
+        const products = (parsed.products || []).map((product: any) => this.mapProduct(product));
+        return {
+          products,
+          pageInfo: {
+            hasNextPage: false
+          }
+        };
+      })
     );
   }
 
@@ -66,16 +110,24 @@ export class ShopifyService {
     const params = new HttpParams()
       .set('vendor', vendor);
 
-    return this.http.get<{ products: ShopifyProduct[] }>(
+    return this.http.get(
       `${this.apiUrl}/products.json`,
-      { headers: this.headers, params }
+      {
+        headers: this.headers,
+        params,
+        responseType: 'text'
+      }
     ).pipe(
-      map(response => ({
-        products: response.products,
-        pageInfo: {
-          hasNextPage: false
-        }
-      }))
+      map(response => {
+        const parsed = JSON.parse(response);
+        const products = (parsed.products || []).map((product: any) => this.mapProduct(product));
+        return {
+          products,
+          pageInfo: {
+            hasNextPage: false
+          }
+        };
+      })
     );
   }
 
@@ -83,25 +135,45 @@ export class ShopifyService {
     const params = new HttpParams()
       .set('tag', tag);
 
-    return this.http.get<{ products: ShopifyProduct[] }>(
+    return this.http.get(
       `${this.apiUrl}/products.json`,
-      { headers: this.headers, params }
+      {
+        headers: this.headers,
+        params,
+        responseType: 'text'
+      }
     ).pipe(
-      map(response => ({
-        products: response.products,
-        pageInfo: {
-          hasNextPage: false
-        }
-      }))
+      map(response => {
+        const parsed = JSON.parse(response);
+        const products = (parsed.products || []).map((product: any) => this.mapProduct(product));
+        return {
+          products,
+          pageInfo: {
+            hasNextPage: false
+          }
+        };
+      })
     );
   }
 
   getProductsByCollection(collectionId: string): Observable<ShopifyProductsResponse> {
-    return this.http.get<{ data: { collection: { products: ShopifyProductsResponse } } }>(
+    return this.http.get(
       `${this.apiUrl}/collections/${collectionId}/products.json`,
-      { headers: this.headers }
+      {
+        headers: this.headers,
+        responseType: 'text'
+      }
     ).pipe(
-      map(response => response.data.collection.products)
+      map(response => {
+        const parsed = JSON.parse(response);
+        const products = (parsed.data?.collection?.products || []).map((product: any) => this.mapProduct(product));
+        return {
+          products,
+          pageInfo: {
+            hasNextPage: false
+          }
+        };
+      })
     );
   }
 } 

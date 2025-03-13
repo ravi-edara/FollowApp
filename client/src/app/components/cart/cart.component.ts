@@ -238,39 +238,41 @@ export class CartComponent implements OnInit {
     });
   }
 
-  //updateQuantity(item: CartItem, quantity: number): void {
-  //  if (quantity > 0) {
-  //    this.cartService.updateQuantity(item.id, quantity);
-  //  }
-  //}
+  updateQuantity(item: CartItem, quantity: number): void {
+    if (quantity > 0) {
+      this.cartService.updateQuantity(item.id, quantity);
+    } else {
+      this.removeItem(item.id);
+    }
+  }
 
-  //removeItem(itemId: string): void {
-  //  this.cartService.removeItem(itemId);
-  //  this.snackBar.open('Item removed from cart', 'Close', {
-  //    duration: 3000,
-  //    horizontalPosition: 'end',
-  //    verticalPosition: 'top'
-  //  });
-  //}
+  removeItem(itemId: string): void {
+    this.cartService.removeItem(itemId);
+    this.snackBar.open('Item removed from cart', 'Close', {
+      duration: 3000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top'
+    });
+  }
 
-  //onSubmit(): void {
-  //  if (this.checkoutForm.valid) {
-  //    this.loading = true;
-  //    const email = this.checkoutForm.get('email')?.value;
+  onSubmit(): void {
+    if (this.checkoutForm.valid) {
+      this.loading = true;
+      const email = this.checkoutForm.get('email')?.value;
 
-  //    this.cartService.createCheckout(email).subscribe({
-  //      next: (response) => {
-  //        window.location.href = response.checkoutUrl;
-  //      },
-  //      error: (error) => {
-  //        this.snackBar.open('Failed to create checkout', 'Close', {
-  //          duration: 3000,
-  //          horizontalPosition: 'end',
-  //          verticalPosition: 'top'
-  //        });
-  //        this.loading = false;
-  //      }
-  //    });
-  //  }
-  //}
+      this.cartService.createCheckout(email).subscribe({
+        next: (response) => {
+          window.location.href = response.webUrl;
+        },
+        error: (error) => {
+          this.snackBar.open('Failed to create checkout', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top'
+          });
+          this.loading = false;
+        }
+      });
+    }
+  }
 } 

@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using ShopifyCart.API.Models;
+using System.Collections.Generic;
 
 namespace ShopifyCart.API.Services
 {
@@ -9,5 +10,6 @@ namespace ShopifyCart.API.Services
         Task<bool> ValidateProductAvailabilityAsync(string productId, string variantId);
         Task<decimal> GetProductPriceAsync(string productId, string variantId);
         Task<CheckoutSession> GetCheckoutSessionAsync(string checkoutId);
+        Task<IEnumerable<ShopifyProduct>> GetAllProductsAsync(int? limit = null);
     }
 } 
